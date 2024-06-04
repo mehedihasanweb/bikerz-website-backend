@@ -10,27 +10,27 @@ const port = process.env.PORT;
 app.use(cors());
 app.use(express.json());
 
-const createJWT = (user) => {
-  const token = jwt.sign(
-    {
-      email: user?.email,
-    },
-    "secret",
-    { expiresIn: "7d" }
-  );
-  return token;
-};
+// const createJWT = (user) => {
+//   const token = jwt.sign(
+//     {
+//       email: user?.email,
+//     },
+//     "secret",
+//     { expiresIn: "7d" }
+//   );
+//   return token;
+// };
 
-const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization.split(" ")[1];
+// const verifyToken = (req, res, next) => {
+//   const token = req.headers.authorization.split(" ")[1];
 
-  const verify = jwt.verify(token, "secret");
-  if (!verify) {
-    return res.send({ message: "You are Unauthorized" });
-  }
-  req.email = verify.email;
-  next();
-};
+//   const verify = jwt.verify(token, "secret");
+//   if (!verify) {
+//     return res.send({ message: "You are Unauthorized" });
+//   }
+//   req.email = verify.email;
+//   next();
+// };
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.o2yxo5l.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -53,18 +53,18 @@ async function run() {
     // user
     app.post("/user", async (req, res) => {
       const user = req.body;
-      const token = createJWT(user);
+      // const token = createJWT(user);
 
       const existUser = await user_Collection.findOne({ email: user?.email });
       if (existUser) {
         return res.send({
           status: "success",
           message: "Login successfull",
-          token,
+          // token,
         });
       }
-      await user_Collection.insertOne(user);
-      res.send({ token });
+      const result = await user_Collection.insertOne(user);
+      res.send(result);
     });
 
     app.get("/user/get/:id", async (req, res) => {
@@ -79,7 +79,7 @@ async function run() {
       res.send(findUser);
     });
 
-    app.patch("/user/:id", verifyToken, async (req, res) => {
+    app.patch("/user/:id", async (req, res) => {
       const id = req.params.id;
       const updateUser = req.body;
       const result = await user_Collection.updateOne(
@@ -91,13 +91,13 @@ async function run() {
     });
 
     // bikes
-    app.post("/bikes", verifyToken, async (req, res) => {
+    app.post("/bikes", async (req, res) => {
       const body = req.body;
       const result = await bike_collection.insertOne(body);
       res.send(result);
     });
 
-    app.patch("/bikes/:id", verifyToken, async (req, res) => {
+    app.patch("/bikes/:id", async (req, res) => {
       const id = req.params.id;
       // console.log(id);
       const updateCard = req.body;
