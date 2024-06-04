@@ -26,13 +26,13 @@ const verifyToken = (req, res, next) => {
 
   const verify = jwt.verify(token, "secret");
   if (!verify) {
-    return res.send({ message: "You are not Unauthorized" });
+    return res.send({ message: "You are Unauthorized" });
   }
   req.email = verify.email;
   next();
 };
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.o2yxo5l.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.o2yxo5l.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -131,7 +131,7 @@ async function run() {
   } finally {
   }
 }
-run().catch(console.dir);
+run().catch(console.log);
 
 app.get("/", (req, res) => {
   res.send("Hello from bikerz zone website");
