@@ -16,7 +16,7 @@ const createJWT = (user) => {
       email: user?.email,
     },
     "secret",
-    { expiresIn: "3d" }
+    { expiresIn: "7d" }
   );
   return token;
 };
@@ -99,7 +99,7 @@ async function run() {
 
     app.patch("/bikes/:id", verifyToken, async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      // console.log(id);
       const updateCard = req.body;
       const result = await bike_collection.updateOne(
         { _id: new ObjectId(id) },
